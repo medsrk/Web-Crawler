@@ -59,11 +59,11 @@ func (s *Sanitiser) SanitiseURL(rawURL string) (string, error) {
 }
 
 func (s *Sanitiser) normaliseURL(rawURL string) string {
-	var normalisedURL string
-	normalisedURL = strings.TrimSpace(rawURL)
+	normalisedURL := strings.TrimSpace(rawURL)
 
 	if !strings.Contains(normalisedURL, "://") {
-		normalisedURL = s.DefaultScheme + rawURL
+		scheme := strings.TrimSuffix(s.DefaultScheme, "://")
+		normalisedURL = scheme + "://" + normalisedURL
 	}
 
 	return normalisedURL
@@ -93,5 +93,9 @@ func (s *Sanitiser) cleanPath(path string) string {
 		return "/"
 	}
 
-	return strings.ReplaceAll(path, "//", "/")
+	cleaned := path
+	for strings.Contains(cleaned, "//") {
+		cleaned = strings.ReplaceAll(cleaned, "//", "/")
+	}
+	return cleaned
 }
